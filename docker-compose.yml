@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: pgdb
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: ecommerce
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  mongo:
+    image: mongo:6
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: products
+    volumes:
+      - mongodata:/data/db
+
+  mongo_express:
+    image: mongo-express
+    container_name: mongoexpress
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+    depends_on:
+      - mongo
+
+  neo4j:
+    image: neo4j:5
+    container_name: neo4j
+    restart: always
+    ports:
+      - "7474:7474"   # Browser UI
+      - "7687:7687"   # Bolt driver port
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_dbms_default__database: neo4j
+    volumes:
+      - neo4jdata:/data
+
+  redis:
+    image: redis:7
+    container_name: redisdb
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  mongodata:
+  neo4jdata:
+  redisdata:
