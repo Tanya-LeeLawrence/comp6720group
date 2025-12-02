@@ -1,78 +1,69 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: postgres:15
-    container_name: pgdb
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: ecommerce
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ecommerce
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - polyglotnet
 
   mongo:
-    image: mongo:6
-    container_name: mongodb
+    image: mongo:7.0
+    container_name: mongo_db
     restart: always
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: products
     volumes:
-      - mongodata:/data/db
-
-  mongo_express:
-    image: mongo-express
-    container_name: mongoexpress
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-    depends_on:
-      - mongo
+      - ./mongo:/docker-entrypoint-initdb.d
+    networks:
+      - polyglotnet
 
   neo4j:
-    image: neo4j:5
-    container_name: neo4j
+    image: neo4j:5.19
+    container_name: neo4j_db
     restart: always
     ports:
-      - "7474:7474"   # Browser UI
-      - "7687:7687"   # Bolt driver port
+      - "7474:7474"   # browser
+      - "7687:7687"   # bolt driver
     environment:
-      NEO4J_AUTH: neo4j/password
-      NEO4J_dbms_default__database: neo4j
+      NEO4J_AUTH: neo4j/password123
     volumes:
-      - neo4jdata:/data
+      - ./neo4j:/var/lib/neo4j/import
+    networks:
+      - polyglotnet
 
   redis:
-    image: redis:7
-    container_name: redisdb
+    image: redis:7.2
+    container_name: redis_db
     restart: always
     ports:
       - "6379:6379"
-    volumes:
-      - redisdata:/data
+    networks:
+      - polyglotnet
 
-volumes:
-  pgdata:
-  mongodata:
-  neo4jdata:
-  redisdata:
+  app:
+    container_name: app_service
+    build: ./app
+    restart: always
+    depends_on:
+      - mysql
+      - mongo
+      - neo4j
+      - redis
+    networks:
+      - polyglotnet
+    command: tail -f /dev/null
+
+
+
+networks:
+  polyglotnet:
+    driver: bridge
