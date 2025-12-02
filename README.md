@@ -1,6 +1,12 @@
 # Polyglot E-Commerce System  
 **COMP6720 – Data Engineering Project**  
-**Author:** [Your Name]  
+**Author:** 
+              Group 6
+              
+              Jariel-Jon Miller
+              Patrick Anglin
+              Keshawn McGrath
+              Tanya-Lee Lawrence  
 **Date:** December 2025  
 
 ---
@@ -114,6 +120,7 @@ ORDER BY purchase_count DESC LIMIT 10;
  4. Redis
 
  
+
 
 
 
