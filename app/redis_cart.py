@@ -13,6 +13,7 @@ cart_key = f"cart:{customer_id}"
 print("\n===== REDIS CART COMMAND =====")
 
 # 1️ Add items to cart
+print("\n Query: Add items to cart")
 product1, product2 = random.randint(1, 150), random.randint(1, 150)
 
 log(f"HINCRBY {cart_key} {product1} 1")
@@ -22,10 +23,12 @@ log(f"HINCRBY {cart_key} {product2} 2")
 r.hincrby(cart_key, product2, 2)
 
 # 2️  View cart
+print("\n Query: View cart")
 log(f"HGETALL {cart_key}")
 print("Cart:", r.hgetall(cart_key))
 
 # 3️ Delete one product
+print("\n Query: Delete one product")
 log(f"HDEL {cart_key} {product1}")
 r.hdel(cart_key, product1)
 
@@ -33,6 +36,7 @@ log(f"HGETALL {cart_key}")
 print("Cart After Removing Item:", r.hgetall(cart_key))
 
 # 4️ Clear entire cart
+print("\n Query: Clear entire cart")
 log(f"DEL {cart_key}")
 r.delete(cart_key)
 
