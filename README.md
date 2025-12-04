@@ -117,9 +117,14 @@ ORDER BY purchase_count DESC LIMIT 10;
 
  docker exec -it mysql_db mysql -u appuser -papppass -e "DESCRIBE ecommerce.customers;"
 
- 4. Redis
+ 4. Redis CLI Command
 
- 
+ docker exec -it redis_db redis-cli
+
+ HINCRBY cart:12 20 1
+ HINCRBY cart:12 55 2
+
+
 
 
 
